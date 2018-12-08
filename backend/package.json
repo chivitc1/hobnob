@@ -4,7 +4,9 @@
   "description": "Learn react - backend",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rm -rf dist/ && babel src -d dist",
+    "serve": "yarn run build && node dist/index.js"
   },
   "repository": {
     "type": "git",
@@ -20,5 +22,14 @@
   "bugs": {
     "url": "https://github.com/chivitc1/hobnob/issues"
   },
-  "homepage": "https://github.com/chivitc1/hobnob#readme"
+  "homepage": "https://github.com/chivitc1/hobnob#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.2.0",
+    "@babel/core": "^7.2.0",
+    "@babel/node": "^7.2.0",
+    "@babel/preset-env": "^7.2.0"
+  },
+  "dependencies": {
+    "@babel/polyfill": "^7.0.0"
+  }
 }

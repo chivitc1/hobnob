@@ -1,0 +1,40 @@
+yarn licenses list
+yarn licenses generate-disclaimer
+yarn why
+node index.js
+
+yarn add @babel/core @babel/cli --dev
+yarn add @babel/polyfill
+
+#Transpile an ES6 js file
+babel example.js -o example-compiled.js
+
+#Transpile an entire directory
+babel src -d build
+
+yarn add @babel/node --dev
+
+babel-node main.js
+
+yarn add @babel/preset-env --dev
+
+npx babel index.js -o index-compiled.js
+
+node index-compiled.js
+
+mkdir src dist
+
+mv index.js src/
+
+rm -rf dist/ && npx babel src -d dist
+
+node dist/index.js
+
+# Run build script
+yarn run build
+
+# Build and Run http server
+yarn run serve
+
+
+

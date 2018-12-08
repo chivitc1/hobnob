@@ -1,4 +1,0 @@
-yarn licenses list
-yarn licenses generate-disclaimer
-yarn why
-node index.js
