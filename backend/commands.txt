@@ -42,5 +42,13 @@ yarn run serve
 # nodemon for dev - auto restart node process when code changes
  yarn add nodemon --dev
 
+# eslint for code more readable
+yarn add eslint --dev
+npx eslint --init
+
+npx eslint src/index.js
+
+
+
 
 
