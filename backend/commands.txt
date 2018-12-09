@@ -48,7 +48,20 @@ npx eslint --init
 
 npx eslint src/index.js
 
+# cucumber in js for e2e test
+yarn add cucumber --dev
 
+mkdir -p spec/cucumber/features/users/create
 
+touch spec/cucumber/features/users/create/main.feature
+
+npx cucumber-js spec/cucumber/features
+mkdir -p spec/cucumber/steps
+
+npx cucumber-js spec/cucumber/features --require spec/cucumber/steps
+
+yarn add @babel/register --dev
+
+npx cucumber-js spec/cucumber/features --require-module @babel/register --require spec/cucumber/steps
 
 
