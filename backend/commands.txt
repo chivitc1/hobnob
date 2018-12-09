@@ -28,6 +28,9 @@ mv index.js src/
 
 rm -rf dist/ && npx babel src -d dist
 
+#rimraf to replace unix rm command
+yarn add rimraf --dev
+
 node dist/index.js
 
 # Run build script
@@ -35,6 +38,9 @@ yarn run build
 
 # Build and Run http server
 yarn run serve
+
+# nodemon for dev - auto restart node process when code changes
+ yarn add nodemon --dev
 
 
 
