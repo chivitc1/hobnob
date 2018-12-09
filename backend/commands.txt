@@ -60,8 +60,16 @@ mkdir -p spec/cucumber/steps
 
 npx cucumber-js spec/cucumber/features --require spec/cucumber/steps
 
+# @babel/register for transpile tests code at runtime
 yarn add @babel/register --dev
 
 npx cucumber-js spec/cucumber/features --require-module @babel/register --require spec/cucumber/steps
 
+# superagent to act with api, compose api call (over node http, native Fetch, axios) 
+yarn add superagent --dev
+
+yarn run test:e2e
+
+# Chrome node dev debug tool
+yarn add ndb --dev
 

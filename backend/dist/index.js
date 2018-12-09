@@ -10,6 +10,7 @@ const requestHandler = function (req, res) {
   res.writeHead(200, {
     'Content-Type': 'text/plain'
   });
+  let x = "Abc";
   res.end('Hello, World!');
 };
 
