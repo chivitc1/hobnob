@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rimraf dist && babel src -d dist",
-    "serve": "yarn run build && node dist/index.js",
+    "serve": "yarn run build && dotenv node dist/index.js",
     "debug": "ndb dist/index.js",
     "watch": "nodemon -w src --exec yarn run serve",
     "fix": "eslint src --fix",
@@ -35,6 +35,7 @@
     "@babel/preset-env": "^7.2.0",
     "@babel/register": "^7.0.0",
     "cucumber": "^5.0.3",
+    "dotenv-cli": "^1.4.0",
     "eslint": "^5.10.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0",

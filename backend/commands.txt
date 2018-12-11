@@ -73,3 +73,13 @@ yarn run test:e2e
 # Chrome node dev debug tool
 yarn add ndb --dev
 
+# dotenv-cli to load env variables
+yarn add dotenv-cli --dev
+
+npm install -g dotenv-cli
+
+# Run e2e test load env using dotenv-cli
+./run-e2e-dotenv.sh
+
+
+
