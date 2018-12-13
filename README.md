@@ -18,9 +18,9 @@ Learn react
 - The user payload may optionally provide a profile object; otherwise, an empty profile will be created for them
 
 ## Break requirements into scenarios:
-- If the client sends a POST request to /users with an empty payload, our API should respond with a 400 Bad Request HTTP status code and a JSON object payload containing an appropriate error message 
-- If the client sends a POST request to /users with a payload that is not JSON, our API should respond with a 415 Unsupported Media Type HTTP status code and a JSON response payload containing an appropriate error message 
-- If the client sends a POST request to /users with a malformed JSON payload, our API should respond with a 400 Bad Request HTTP status code and a JSON response payload containing an appropriate error message
+- (1) If the client sends a POST request to /users with an empty payload, our API should respond with a 400 Bad Request HTTP status code and a JSON object payload containing an appropriate error message 
+- (2) If the client sends a POST request to /users with a payload that is not JSON, our API should respond with a 415 Unsupported Media Type HTTP status code and a JSON response payload containing an appropriate error message 
+- (3) If the client sends a POST request to /users with a malformed JSON payload, our API should respond with a 400 Bad Request HTTP status code and a JSON response payload containing an appropriate error message
 
 ## Write e2e tests for feature
 - Define spec in plain english using Gherkin keywords: Feature, Scenario, Given, When, Then, And, But
@@ -30,5 +30,6 @@ Learn react
 - Implement node js web api using http module (may replaced by express later)
 - Do it until all e2e tests of the feature passed.
 
-
+## Second and third scenarios of the feature
+- update e2e tests
 

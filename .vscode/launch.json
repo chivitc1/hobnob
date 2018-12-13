@@ -11,7 +11,7 @@
         "--presets",
         "@babel/env"
       ],
-      "program": "${workspaceFolder}/backend/src/index.js",
+      "program": "${file}",
       "protocol": "inspector",
       "env": {
         "BABEL_ENV": "debug"
