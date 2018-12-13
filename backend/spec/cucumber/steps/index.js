@@ -10,7 +10,23 @@ When(/^the client creates a (GET|POST|PATCH|PUT|DELETE|OPTIONS|HEAD) request to 
     const processedPath = `${process.env.SERVER_PROTOCOL}://${process.env.SERVER_HOSTNAME}:${process.env.SERVER_PORT}${path}`;
     this.request = superagent(method, processedPath);
 });
-When(/^attaches a generic empty payload$/, () => undefined);
+When(/^attaches a generic (.+) payload$/, function(payloadType) {
+  switch (payloadType) {
+    case 'malformed':
+      this.request
+        .send('{"key1": "value1", key2}')
+        .set('Content-Type', 'application/json');
+      break;
+    case 'non-JSON':
+      this.request
+        .send('<?xml version="1.0" encoding="UTF-8" ?><email>user1@example.com</email>')
+        .set('Content-Type', 'text/xml');
+      break;
+    case 'empty':
+      //send nothing is a default behavior
+    default:
+  }
+});
 
 When(/^sends the request$/, function(callback) {
   this.request.then((response) => {
@@ -36,16 +52,6 @@ Then(/^the payload of the response should be an? ([a-zA-Z0-9, ]+)$/, function(pa
     console.log("ERROR: " + err)
     throw new Error('Response not a valid JSON object');
   }
-});
-
-When(/^attaches a generic non-JSON payload$/, function() {
-  this.request.send('<?xml version="1.0" encoding="UTF-8" ?><email>user1@example.com</email>');
-  this.request.set('Content-Type', 'text/xml');
-});
-
-When(/^attaches a generic malformed payload$/, function() {
-  this.request.send('{"key1": "value1", key2}');
-  this.request.set('Content-Type', 'application/json');
 });
 
 Then(/^our API should respond with a ([1-5]\d{2}) HTTP status code$/, function(statusCode) {
