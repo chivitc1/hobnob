@@ -81,5 +81,9 @@ npm install -g dotenv-cli
 # Run e2e test load env using dotenv-cli
 ./run-e2e-dotenv.sh
 
+# Use express and middlewares for experss
+yarn add express
+yarn add body-parser
+
 
 
