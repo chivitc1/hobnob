@@ -33,3 +33,7 @@ Learn react
 ## Second and third scenarios of the feature
 - update e2e tests
 
+## More general requirements
+- If a request uses the method POST, PUT or PATCH, it must carry a non-empty payload.
+- If a request contains a non-empty payload, it should have its Content-Type header set. If it doesn't, respond with the 400 Bad Request status code.
+- If a request has set its Content-Type header, it must contain the string application/json. If it doesn't, respond with the 415 Unsupported Media Type status code.

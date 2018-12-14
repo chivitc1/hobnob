@@ -9,9 +9,6 @@ var _bodyParser = _interopRequireDefault(require("body-parser"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const app = (0, _express.default)();
-app.use(_bodyParser.default.json({
-  limit: 1e6
-}));
 `
 For POST and PUT requests, the body payload can be quite large. So, instead of
 receiving the entire payload in one large chunk, it's better to consume it as a
@@ -20,6 +17,61 @@ requestHandler function implements the ReadableStream interface. To extract the
 request body of POST and PUT requests, we must listen for the data and end events
 emitted from the stream.
 `;
+
+function checkEmptyPayLoad(req, res, next) {
+  if (['POST', 'PUT', 'PATCH'].includes(req.method) && req.headers['content-length'] == 0) {
+    console.log("EMPTY content");
+    res.status(400);
+    res.set({
+      'Content-Type': 'application/json'
+    });
+    res.json({
+      message: 'Payload should not be empty'
+    });
+    return;
+  }
+
+  next();
+}
+
+function checkContentTypeIsSet(req, res, next) {
+  if (!req.headers['content-type'] && req.headers['content-length'] && req.headers['content-length'] !== '0') {
+    console.log("content type or content-length is not set");
+    res.status(400);
+    res.set({
+      'Content-Type': 'application/json'
+    });
+    res.json({
+      message: 'The "Content-Type" header must be set for requests with a non-empty payload'
+    });
+    return;
+  }
+
+  next();
+}
+
+function checkContentTypeIsJson(req, res, next) {
+  if (!req.headers['content-type'].includes('application/json')) {
+    console.log("content-type is not application/json");
+    res.status(415);
+    res.set({
+      'Content-Type': 'application/json'
+    });
+    res.json({
+      message: 'The "Content-Type" header must always be "application/json"'
+    });
+    return;
+  }
+
+  next();
+}
+
+app.use(checkEmptyPayLoad);
+app.use(checkContentTypeIsSet);
+app.use(checkContentTypeIsJson);
+app.use(_bodyParser.default.json({
+  limit: 1e6
+}));
 app.post('/users', (req, res) => {
   //Handle empty payload
   if (req.headers['content-length'] == 0) {
