@@ -79,3 +79,9 @@ yarn add dotenv-cli --dev
 # Use express and middlewares for experss
 yarn add express
 yarn add body-parser
+
+# Run specific scenario using feature file and line number of the scenario
+yarn run test:e2e [path to feature file] [line number of scenario]
+eg:
+$ yarn run test:e2e /home/chinv/dev/js/hobnob_chinv/hobnob/backend/spec/cucumber/features/users/create/main.feature 22
+

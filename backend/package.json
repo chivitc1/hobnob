@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rimraf dist && babel src -d dist",
-    "serve": "yarn run build && dotenv node dist/index.js",
+    "serve": "yarn run build && dotenv -e envs/run.env node dist/index.js",
     "watch": "nodemon -w src --exec yarn run serve",
     "fix": "eslint src --fix",
     "lint": "eslint src",

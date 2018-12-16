@@ -28,6 +28,24 @@ When(/^attaches a generic (.+) payload$/, function(payloadType) {
   }
 });
 
+When(/^attaches a (.+) payload which is missing the (.+) fields?$/, 
+  function(payloadType, missingFields) {
+    const payload = {
+      email: "user1@example.com",
+      password: "password1",
+      other: "other1",
+    }
+
+    const fieldsToDelete = missingFields.split(',').map(s => s.trim()).filter(s => s === 'email' || s === 'password');
+
+    fieldsToDelete.forEach(field => delete payload[field]);
+
+    console.log("PAYLOAD");
+    console.log(payload);
+    this.request
+      .send(JSON.stringify(payload))
+      .set('Content-Type', 'application/json');
+})
 When(/^sends the request$/, function(callback) {
   this.request.then((response) => {
     this.response = response.res;

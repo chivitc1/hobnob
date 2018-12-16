@@ -60,10 +60,31 @@ function handleErrors(err, req, res, next) {
 
   next();
 }
+
+function validateInput(req, res, next) {
+  if (!Object.prototype.hasOwnProperty.call(req.body, 'email'))
+     {
+      console.log("validateInput matched");
+      return res.status(400)
+        .set('Content-Type', 'application/json')
+        .json({ message: "The 'email' field is missing"});
+    }
+  if (!Object.prototype.hasOwnProperty.call(req.body, 'password'))
+    {
+     console.log("validateInput matched");
+     return res.status(400)
+       .set('Content-Type', 'application/json')
+       .json({ message: "The 'password' field is missing"});
+   }
+    next();
+}
 app.use(checkEmptyPayLoad);
 app.use(checkContentTypeIsSet);
 app.use(checkContentTypeIsJson);
+
 app.use(bodyParser.json({ limit: 1e6 }));
+app.use(validateInput);
+
 
 app.post('/users', (req, res) => {    
   console.log("handle post /users");
