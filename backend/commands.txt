@@ -40,7 +40,7 @@ yarn run build
 yarn run serve
 
 # nodemon for dev - auto restart node process when code changes
- yarn add nodemon --dev
+yarn add nodemon --dev
 
 # eslint for code more readable
 yarn add eslint --dev
@@ -76,14 +76,6 @@ yarn add ndb --dev
 # dotenv-cli to load env variables
 yarn add dotenv-cli --dev
 
-npm install -g dotenv-cli
-
-# Run e2e test load env using dotenv-cli
-./run-e2e-dotenv.sh
-
 # Use express and middlewares for experss
 yarn add express
 yarn add body-parser
-
-
-

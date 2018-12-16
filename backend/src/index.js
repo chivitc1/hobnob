@@ -13,8 +13,9 @@ request body of POST and PUT requests, we must listen for the data and end event
 emitted from the stream.
 `
 function checkEmptyPayLoad(req, res, next) {
+  console.log("checkEmptyPayLoad");
   if (['POST', 'PUT', 'PATCH'].includes(req.method) && req.headers['content-length'] == 0) {
-    console.log("EMPTY content");
+    console.log("checkEmptyPayLoad matched");
     res.status(400)
     res.set({'Content-Type': 'application/json'});
     res.json({message: 'Payload should not be empty'});
@@ -24,8 +25,9 @@ function checkEmptyPayLoad(req, res, next) {
 }
 
 function checkContentTypeIsSet(req, res, next) {
-  if (!req.headers['content-type'] && req.headers['content-length'] && req.headers['content-length'] !== '0') {
-    console.log("content type or content-length is not set");
+  console.log("checkContentTypeIsSet");
+  if (!req.headers['content-type'] && req.headers['content-length'] && req.headers['content-length'] !== 0) {
+    console.log("checkContentTypeIsSet matched");
     res.status(400);
     res.set({'Content-Type': 'application/json'});
     res.json({message: 'The "Content-Type" header must be set for requests with a non-empty payload'});
@@ -34,8 +36,10 @@ function checkContentTypeIsSet(req, res, next) {
   next();
 }
 function checkContentTypeIsJson(req, res, next) {
+  console.log("checkContentTypeIsJson");
   if (!req.headers['content-type'].includes('application/json')) {
-    console.log("content-type is not application/json");
+
+    console.log("checkContentTypeIsJson matched");
     res.status(415);
     res.set({'Content-Type': 'application/json'});
     res.json({message: 'The "Content-Type" header must always be "application/json"'});
@@ -44,33 +48,10 @@ function checkContentTypeIsJson(req, res, next) {
   next();
 }
 
-app.use(checkEmptyPayLoad);
-app.use(checkContentTypeIsSet);
-app.use(checkContentTypeIsJson)
-app.use(bodyParser.json({ limit: 1e6 }));
-
-app.post('/users', (req, res) => {    
-  //Handle empty payload
-  if (req.headers['content-length'] == 0) {
-    res.status(400)
-    res.set({'Content-Type': 'application/json'});
-    res.json({message: 'Payload should not be empty'});
-    return;
-  }
-  
-  // Handle code 415
-  if (req.headers['content-type'] !== 'application/json') {
-    res.status(415);
-    res.set({'Content-Type': 'application/json'});
-    res.json({message: 'The "Content-Type" header must always be "application/json"'});
-    return;
-  }
-});
-
-// Handling error
-app.use((err, req, res, next) => {
+function handleErrors(err, req, res, next) {
+  console.log("handleErrors");
   if (err instanceof SyntaxError && err.status === 400 && 'body' in err && err.type === 'entity.parse.failed') {
-    // Handle malformed json payload
+    console.log("handleErrors matched");
     res.status(400);
     res.set({'Content-Type': 'application/json'});
     res.json({ message: 'Payload should be in JSON format' }); 
@@ -78,7 +59,18 @@ app.use((err, req, res, next) => {
   }
 
   next();
+}
+app.use(checkEmptyPayLoad);
+app.use(checkContentTypeIsSet);
+app.use(checkContentTypeIsJson);
+app.use(bodyParser.json({ limit: 1e6 }));
+
+app.post('/users', (req, res) => {    
+  console.log("handle post /users");
 });
+
+// Handling error
+app.use(handleErrors);
 app.listen(process.env.SERVER_PORT, () => {
   console.log(`Server start at port ${process.env.SERVER_PORT}`)
 });
