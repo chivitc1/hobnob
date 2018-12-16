@@ -45,7 +45,21 @@ When(/^attaches a (.+) payload which is missing the (.+) fields?$/,
     this.request
       .send(JSON.stringify(payload))
       .set('Content-Type', 'application/json');
-})
+});
+
+When(/^attaches a (.+) payload where the email field is exactly (.+)$/, 
+  function(payloadType, emailValue) {
+    const payload = {
+      email: "replaceEmailValue",
+      password: "password1",
+      other: "other1",
+    }
+    payload['email'] = emailValue;
+    console.log("payload: " + JSON.stringify(payload));
+    this.request.send(JSON.stringify(payload))
+      .set('Content-Type', 'application/json');
+});
+
 When(/^sends the request$/, function(callback) {
   this.request.then((response) => {
     this.response = response.res;
