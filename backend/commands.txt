@@ -85,3 +85,5 @@ yarn run test:e2e [path to feature file] [line number of scenario]
 eg:
 $ yarn run test:e2e /home/chinv/dev/js/hobnob_chinv/hobnob/backend/spec/cucumber/features/users/create/main.feature 22
 
+# Install mongoose
+yarn add mongoose

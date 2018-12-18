@@ -1,0 +1,16 @@
+version: "3.2"
+
+services:
+  mongodb:
+    image: 'bitnami/mongodb:latest'
+    ports:
+      - "27017:27017"
+    environment:
+      MONGODB_USERNAME: user1
+      MONGODB_PASSWORD: password123
+      MONGODB_DATABASE: hobnob
+    networks:
+      - test
+
+networks:
+  test:
