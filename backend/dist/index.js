@@ -26,8 +26,10 @@ app.use(_bodyParser.default.json({
   limit: 1e6
 }));
 app.use(_user.default);
-app.post('/users', (req, res) => {
+app.post('/users', (req, res, next) => {
   console.log("handle post /users");
+  return res.status(201).set('Content-Type', 'text/plain').send();
+  next();
 }); // Handling error
 
 app.use(_errorHandle.default);

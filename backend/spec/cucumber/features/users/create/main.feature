@@ -52,7 +52,7 @@ Feature: Create User
 
     Scenario: Minimal Valid User
       When the client creates a POST request to /users
-      And attaches a valid User payload
+      And attaches a valid Create User payload
       And sends the request
       Then our API should respond with a 201 HTTP status code
       And the payload of the response should be a string

@@ -16,8 +16,13 @@ app.use(checkContentTypeIsJson);
 app.use(bodyParser.json({ limit: 1e6 }));
 app.use(validateInput);
 
-app.post('/users', (req, res) => {    
+app.post('/users', (req, res, next) => {    
   console.log("handle post /users");
+  return res.status(201)
+    .set('Content-Type', 'text/plain')
+    .send();
+
+  next();
 });
 
 // Handling error

@@ -54,6 +54,7 @@ When(/^attaches a (.+) payload where the email field is exactly (.+)$/,
 
 When(/^attaches a valid (.+) payload$/, function (payloadType) {
   this.requestPayload = getValidPayload(payloadType);
+  console.log("payload: " + JSON.stringify(this.requestPayload));
   this.request
   .send(JSON.stringify(this.requestPayload))
   .set('Content-Type', 'application/json');
@@ -75,14 +76,18 @@ Then(/^the payload of the response should be an? ([a-zA-Z0-9, ]+)$/, function(pa
     if (!contentType || !contentType.includes('application/json')) {
       throw new Error('Response not of content-type application/json');
     }
-  }  
 
-  try {
-    this.responsePayload = JSON.parse(this.response.text);
-  } catch (err) {
-    console.log("ERROR: " + err)
-    throw new Error('Response not a valid JSON object');
-  }
+    try {
+      this.responsePayload = JSON.parse(this.response.text);
+    } catch (err) {
+      console.log("ERROR: " + err)
+      throw new Error('Response not a valid JSON object');
+    }
+  }  else if (payloadType === 'string') { 
+    if (!contentType || !contentType.includes('text/plain')) {
+      throw new Error('Response not of Content-Type text/plain');
+    }
+  }  
 });
 
 Then(/^our API should respond with a ([1-5]\d{2}) HTTP status code$/, function(statusCode) {
