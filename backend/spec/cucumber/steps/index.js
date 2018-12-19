@@ -1,6 +1,7 @@
 import { When, Then } from 'cucumber';
 import superagent from 'superagent';
 import assert from 'assert'
+import { getValidPayload } from './utils'
 
 const API_URL = `${process.env.SERVER_PROTOCOL}://${process.env.SERVER_HOSTNAME}:${process.env.SERVER_PORT}/users`;
 console.log("API: " + API_URL);
@@ -30,35 +31,33 @@ When(/^attaches a generic (.+) payload$/, function(payloadType) {
 
 When(/^attaches a (.+) payload which is missing the (.+) fields?$/, 
   function(payloadType, missingFields) {
-    const payload = {
-      email: "user1@example.com",
-      password: "password1",
-      other: "other1",
-    }
+    this.requestPayload = getValidPayload(payloadType);
 
     const fieldsToDelete = missingFields.split(',').map(s => s.trim()).filter(s => s === 'email' || s === 'password');
 
-    fieldsToDelete.forEach(field => delete payload[field]);
+    fieldsToDelete.forEach(field => delete this.requestPayload[field]);
 
-    console.log("PAYLOAD");
-    console.log(payload);
+    console.log(this.requestPayload);
     this.request
-      .send(JSON.stringify(payload))
+      .send(JSON.stringify(this.requestPayload))
       .set('Content-Type', 'application/json');
 });
 
 When(/^attaches a (.+) payload where the email field is exactly (.+)$/, 
   function(payloadType, emailValue) {
-    const payload = {
-      email: "replaceEmailValue",
-      password: "password1",
-      other: "other1",
-    }
-    payload['email'] = emailValue;
-    console.log("payload: " + JSON.stringify(payload));
-    this.request.send(JSON.stringify(payload))
+    this.requestPayload = getValidPayload(payloadType);
+    this.requestPayload['email'] = emailValue;
+    console.log("payload: " + JSON.stringify(this.requestPayload));
+    this.request.send(JSON.stringify(this.requestPayload))
       .set('Content-Type', 'application/json');
 });
+
+When(/^attaches a valid (.+) payload$/, function (payloadType) {
+  this.requestPayload = getValidPayload(payloadType);
+  this.request
+  .send(JSON.stringify(this.requestPayload))
+  .set('Content-Type', 'application/json');
+  });
 
 When(/^sends the request$/, function(callback) {
   this.request.then((response) => {
