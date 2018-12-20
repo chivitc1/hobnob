@@ -16,7 +16,20 @@ var _errorHandle = _interopRequireDefault(require("./middlewares/error-handle"))
 
 var _user = _interopRequireDefault(require("./validators/user"));
 
+var _user2 = _interopRequireDefault(require("./models/user.model"));
+
+var _mongoose = _interopRequireDefault(require("mongoose"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+const MONGO_URI = `mongodb://user1:password123@localhost:27017/hobnob`;
+_mongoose.default.Promise = global.Promise;
+
+_mongoose.default.connect(MONGO_URI);
+
+_mongoose.default.connection.on('error', () => {
+  throw new Error(`unable to connect to database: ${MONGO_URI}`);
+});
 
 const app = (0, _express.default)();
 app.use(_checkEmptyPayload.default);
@@ -27,9 +40,19 @@ app.use(_bodyParser.default.json({
 }));
 app.use(_user.default);
 app.post('/users', (req, res, next) => {
-  console.log("handle post /users");
-  return res.status(201).set('Content-Type', 'text/plain').send();
-  next();
+  console.log("handle post /users: ");
+  console.log(req.body);
+  let newUserModel = new _user2.default(req.body);
+  newUserModel.save().then(data => {
+    console.log("CREATED USER: ");
+    console.log(data);
+    return res.status(201).set('Content-Type', 'application/json').json(data);
+  }).catch(error => {
+    console.log(error);
+    return res.status(500).set('Content-Type', 'application/json').json({
+      message: err
+    });
+  });
 }); // Handling error
 
 app.use(_errorHandle.default);

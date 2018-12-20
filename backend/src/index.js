@@ -7,6 +7,16 @@ import checkContentTypeIsJson from './middlewares/check-content-is-json';
 import handleErrors from './middlewares/error-handle';
 import validateInput from './validators/user';
 
+import User from './models/user.model';
+import mongoose from 'mongoose';
+
+const MONGO_URI = `mongodb://user1:password123@localhost:27017/hobnob`;
+mongoose.Promise = global.Promise;
+mongoose.connect(MONGO_URI);
+mongoose.connection.on('error', () => {
+  throw new Error(`unable to connect to database: ${MONGO_URI}`)
+});
+
 const app = express();
 
 app.use(checkEmptyPayLoad);
@@ -17,12 +27,25 @@ app.use(bodyParser.json({ limit: 1e6 }));
 app.use(validateInput);
 
 app.post('/users', (req, res, next) => {    
-  console.log("handle post /users");
-  return res.status(201)
-    .set('Content-Type', 'text/plain')
-    .send();
+  console.log("handle post /users: ");
+  console.log(req.body);
+  let newUserModel = new User(req.body);
+  newUserModel.save()
+    .then((data) => {
+    console.log("CREATED USER: ");
+    console.log(data);
+    return res.status(201)
+      .set('Content-Type', 'application/json')
+      .json(data);
+    
+  }).catch((error) => {
+    console.log(error);
+    return res.status(500)
+        .set('Content-Type', 'application/json')
+        .json({message: err});
+  });  
 
-  next();
+  
 });
 
 // Handling error

@@ -1,17 +1,53 @@
-import { When, Then } from 'cucumber';
+import { When, Then, After, Before } from 'cucumber';
 import superagent from 'superagent';
-import assert from 'assert'
-import { getValidPayload } from './utils'
+import assert from 'assert';
+import { getValidPayload } from './utils';
+import mongoose from 'mongoose';
 
-const API_URL = `${process.env.SERVER_PROTOCOL}://${process.env.SERVER_HOSTNAME}:${process.env.SERVER_PORT}/users`;
-console.log("API: " + API_URL);
+let User;
 
-When(/^the client creates a (GET|POST|PATCH|PUT|DELETE|OPTIONS|HEAD) request to ([/\w-:.]+)$/, 
-  function(method, path) {  
+process.on('SIGINT', function(){
+  mongoose.connection.close(function(){
+    console.log("Mongoose default connection is disconnected due to application termination");
+     process.exit(0);
+    });
+});
+
+//run once before all tests
+Before(function (done) {
+  const MONGO_URI = `mongodb://user1:password123@localhost:27017/hobnob`;
+  mongoose.Promise = global.Promise;
+
+  const UserSchema = new mongoose.Schema({
+    email: {
+        type: String,
+    },
+    password: {
+        type: String,
+    },
+  });
+
+  User = mongoose.model('User', UserSchema);
+
+  mongoose.connection.on('error', () => {
+    throw new Error(`unable to connect to database: ${MONGO_URI}`)
+  });
+  mongoose.connect(MONGO_URI);
+});
+
+//run once after all tests
+After(function (done) {
+  // mongoose.connection.close(() => {
+  //   console.log("Mongoose connection is disconnected");
+  // })
+});
+
+When(/^the client creates a (GET|POST|PATCH|PUT|DELETE|OPTIONS|HEAD) request to ([/\w-:.]+)$/,
+  function (method, path) {
     const processedPath = `${process.env.SERVER_PROTOCOL}://${process.env.SERVER_HOSTNAME}:${process.env.SERVER_PORT}${path}`;
     this.request = superagent(method, processedPath);
-});
-When(/^attaches a generic (.+) payload$/, function(payloadType) {
+  });
+When(/^attaches a generic (.+) payload$/, function (payloadType) {
   switch (payloadType) {
     case 'malformed':
       this.request
@@ -24,13 +60,13 @@ When(/^attaches a generic (.+) payload$/, function(payloadType) {
         .set('Content-Type', 'text/xml');
       break;
     case 'empty':
-      //send nothing is a default behavior
+    //send nothing is a default behavior
     default:
   }
 });
 
-When(/^attaches a (.+) payload which is missing the (.+) fields?$/, 
-  function(payloadType, missingFields) {
+When(/^attaches a (.+) payload which is missing the (.+) fields?$/,
+  function (payloadType, missingFields) {
     this.requestPayload = getValidPayload(payloadType);
 
     const fieldsToDelete = missingFields.split(',').map(s => s.trim()).filter(s => s === 'email' || s === 'password');
@@ -41,26 +77,26 @@ When(/^attaches a (.+) payload which is missing the (.+) fields?$/,
     this.request
       .send(JSON.stringify(this.requestPayload))
       .set('Content-Type', 'application/json');
-});
+  });
 
-When(/^attaches a (.+) payload where the email field is exactly (.+)$/, 
-  function(payloadType, emailValue) {
+When(/^attaches a (.+) payload where the email field is exactly (.+)$/,
+  function (payloadType, emailValue) {
     this.requestPayload = getValidPayload(payloadType);
     this.requestPayload['email'] = emailValue;
     console.log("payload: " + JSON.stringify(this.requestPayload));
     this.request.send(JSON.stringify(this.requestPayload))
       .set('Content-Type', 'application/json');
-});
+  });
 
 When(/^attaches a valid (.+) payload$/, function (payloadType) {
   this.requestPayload = getValidPayload(payloadType);
-  console.log("payload: " + JSON.stringify(this.requestPayload));
+  // console.log("payload: " + JSON.stringify(this.requestPayload));
   this.request
-  .send(JSON.stringify(this.requestPayload))
-  .set('Content-Type', 'application/json');
-  });
+    .send(JSON.stringify(this.requestPayload))
+    .set('Content-Type', 'application/json');
+});
 
-When(/^sends the request$/, function(callback) {
+When(/^sends the request$/, function (callback) {
   this.request.then((response) => {
     this.response = response.res;
     callback();
@@ -70,7 +106,7 @@ When(/^sends the request$/, function(callback) {
   });
 });
 
-Then(/^the payload of the response should be an? ([a-zA-Z0-9, ]+)$/, function(payloadType) {
+Then(/^the payload of the response should be an? ([a-zA-Z0-9, ]+)$/, function (payloadType) {
   const contentType = this.response.headers['Content-Type'] || this.response.headers['content-type']
   if (payloadType === 'JSON object') {
     if (!contentType || !contentType.includes('application/json')) {
@@ -83,14 +119,10 @@ Then(/^the payload of the response should be an? ([a-zA-Z0-9, ]+)$/, function(pa
       console.log("ERROR: " + err)
       throw new Error('Response not a valid JSON object');
     }
-  }  else if (payloadType === 'string') { 
-    if (!contentType || !contentType.includes('text/plain')) {
-      throw new Error('Response not of Content-Type text/plain');
-    }
-  }  
+  }
 });
 
-Then(/^our API should respond with a ([1-5]\d{2}) HTTP status code$/, function(statusCode) {
+Then(/^our API should respond with a ([1-5]\d{2}) HTTP status code$/, function (statusCode) {
   assert.equal(this.response.statusCode, statusCode);
 });
 
@@ -98,6 +130,56 @@ Then(/^contains a message property which says (?:"|')(.*)(?:"|')$/, function (me
   assert.equal(this.responsePayload.message, message);
 });
 
-When(/^without a (?:"|')([\w-]+)(?:"|') header set$/, function(headerName) {
+When(/^without a (?:"|')([\w-]+)(?:"|') header set$/, function (headerName) {
   this.request.unset(headerName);
 });
+
+Then(/^the user object should be added to the database$/,
+  function () {
+    console.log("Check user in db");
+    this.newUserId = this.responsePayload._id;
+    console.log("User id");
+    console.log(this.newUserId);
+
+    User.findById(this.newUserId)
+      .then((data) => {
+        console.log("find by ID");
+        if (!data) {
+          throw new Error("User not found");
+        }
+        
+        assert.equal(data._id, this.newUserId);   
+        console.log("Finish assert test");
+      })
+      .catch((err) => {
+        console.log("ERROR: ");
+        console.log(err);
+        throw new Error(err);
+      });
+
+  });
+
+Then(/^the new created user should be removed from database$/, function (done) {
+  console.log("Expect remove user");
+  console.log(this.newUserId);
+  User.findOneAndDelete({_id: this.newUserId})
+    .then(() => {
+      User.findById(this.newUserId)
+        .then((data) => {
+          console.log("After deleted");
+          console.log(!data);
+          // assert.equal(!data, false);
+          if (data) {
+            throw new Error("user not deleted");
+          }
+          done();
+        })
+      console.log("Remove user");
+      
+    })
+    .catch((err) => {
+      console.log("Failed to delete user");
+      console.log(err);
+    });
+});
+
