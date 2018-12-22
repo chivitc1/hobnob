@@ -5,7 +5,7 @@ import { getValidPayload } from './utils';
 import mongoose from 'mongoose';
 
 var {setDefaultTimeout} = require('cucumber');
-setDefaultTimeout(3 * 1000);
+setDefaultTimeout(10 * 1000);
 
 let User;
 const MONGO_URI = `mongodb://user1:password123@localhost:27017/hobnob`;
@@ -41,6 +41,7 @@ AfterAll(function() {
     } else{
         console.log('No Of Documents deleted:' + result.n);
     }
+    mongoose.disconnect();
   });
 });
 
