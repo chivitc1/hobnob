@@ -1,45 +1,47 @@
-import { When, Then, After, Before } from 'cucumber';
+import { When, Then, AfterAll } from 'cucumber';
 import superagent from 'superagent';
-import assert from 'assert';
+import assert, { AssertionError } from 'assert';
 import { getValidPayload } from './utils';
 import mongoose from 'mongoose';
 
+var {setDefaultTimeout} = require('cucumber');
+setDefaultTimeout(3 * 1000);
+
 let User;
+const MONGO_URI = `mongodb://user1:password123@localhost:27017/hobnob`;
+mongoose.Promise = global.Promise;
 
-process.on('SIGINT', function(){
-  mongoose.connection.close(function(){
+const UserSchema = new mongoose.Schema({
+  email: {
+    type: String,
+  },
+  password: {
+    type: String,
+  },
+});
+
+User = mongoose.model('User', UserSchema);
+
+mongoose.connection.on('error', () => {
+  throw new Error(`unable to connect to database: ${MONGO_URI}`)
+});
+mongoose.connect(MONGO_URI, { useNewUrlParser: true });
+
+process.on('SIGINT', function () {
+  mongoose.connection.close(function () {
     console.log("Mongoose default connection is disconnected due to application termination");
-     process.exit(0);
-    });
+    process.exit(0);
+  });
 });
 
-//run once before all tests
-Before(function (done) {
-  const MONGO_URI = `mongodb://user1:password123@localhost:27017/hobnob`;
-  mongoose.Promise = global.Promise;
-
-  const UserSchema = new mongoose.Schema({
-    email: {
-        type: String,
-    },
-    password: {
-        type: String,
-    },
+AfterAll(function() {
+  return User.deleteOne(function(err, result){
+    if(err){ 
+        throw err;
+    } else{
+        console.log('No Of Documents deleted:' + result.n);
+    }
   });
-
-  User = mongoose.model('User', UserSchema);
-
-  mongoose.connection.on('error', () => {
-    throw new Error(`unable to connect to database: ${MONGO_URI}`)
-  });
-  mongoose.connect(MONGO_URI);
-});
-
-//run once after all tests
-After(function (done) {
-  // mongoose.connection.close(() => {
-  //   console.log("Mongoose connection is disconnected");
-  // })
 });
 
 When(/^the client creates a (GET|POST|PATCH|PUT|DELETE|OPTIONS|HEAD) request to ([/\w-:.]+)$/,
@@ -73,7 +75,6 @@ When(/^attaches a (.+) payload which is missing the (.+) fields?$/,
 
     fieldsToDelete.forEach(field => delete this.requestPayload[field]);
 
-    console.log(this.requestPayload);
     this.request
       .send(JSON.stringify(this.requestPayload))
       .set('Content-Type', 'application/json');
@@ -83,7 +84,6 @@ When(/^attaches a (.+) payload where the email field is exactly (.+)$/,
   function (payloadType, emailValue) {
     this.requestPayload = getValidPayload(payloadType);
     this.requestPayload['email'] = emailValue;
-    console.log("payload: " + JSON.stringify(this.requestPayload));
     this.request.send(JSON.stringify(this.requestPayload))
       .set('Content-Type', 'application/json');
   });
@@ -96,30 +96,31 @@ When(/^attaches a valid (.+) payload$/, function (payloadType) {
     .set('Content-Type', 'application/json');
 });
 
-When(/^sends the request$/, function (callback) {
-  this.request.then((response) => {
-    this.response = response.res;
-    callback();
-  }).catch((error) => {
-    this.response = error.response;
-    callback();
-  });
+When(/^sends the request$/, function () {
+  return this.request
+    .then((response) => {
+      this.response = response.res;
+    }).catch((error) => {
+      this.response = error.response;
+    });
 });
 
 Then(/^the payload of the response should be an? ([a-zA-Z0-9, ]+)$/, function (payloadType) {
   const contentType = this.response.headers['Content-Type'] || this.response.headers['content-type']
   if (payloadType === 'JSON object') {
     if (!contentType || !contentType.includes('application/json')) {
-      throw new Error('Response not of content-type application/json');
+      throw new AssertionError({ message: 'Response not of content-type application/json' });
     }
 
     try {
-      this.responsePayload = JSON.parse(this.response.text);
+      return this.responsePayload = JSON.parse(this.response.text);
     } catch (err) {
       console.log("ERROR: " + err)
-      throw new Error('Response not a valid JSON object');
+      throw new AssertionError({ message: 'Response not a valid JSON object' });
     }
   }
+
+  throw new AssertionError({ message: 'Response not a valid JSON object' });
 });
 
 Then(/^our API should respond with a ([1-5]\d{2}) HTTP status code$/, function (statusCode) {
@@ -136,50 +137,18 @@ When(/^without a (?:"|')([\w-]+)(?:"|') header set$/, function (headerName) {
 
 Then(/^the user object should be added to the database$/,
   function () {
-    console.log("Check user in db");
-    this.newUserId = this.responsePayload._id;
-    console.log("User id");
-    console.log(this.newUserId);
-
-    User.findById(this.newUserId)
+    this.userId = this.responsePayload._id;
+    return User.findById(this.userId)
       .then((data) => {
-        console.log("find by ID");
         if (!data) {
-          throw new Error("User not found");
-        }
-        
-        assert.equal(data._id, this.newUserId);   
-        console.log("Finish assert test");
+          throw new AssertionError({ message: "User object not added to database" });
+        } 
+
+        assert.deepStrictEqual(data._id + '', this.userId)
       })
       .catch((err) => {
         console.log("ERROR: ");
         console.log(err);
-        throw new Error(err);
       });
 
   });
-
-Then(/^the new created user should be removed from database$/, function (done) {
-  console.log("Expect remove user");
-  console.log(this.newUserId);
-  User.findOneAndDelete({_id: this.newUserId})
-    .then(() => {
-      User.findById(this.newUserId)
-        .then((data) => {
-          console.log("After deleted");
-          console.log(!data);
-          // assert.equal(!data, false);
-          if (data) {
-            throw new Error("user not deleted");
-          }
-          done();
-        })
-      console.log("Remove user");
-      
-    })
-    .catch((err) => {
-      console.log("Failed to delete user");
-      console.log(err);
-    });
-});
-

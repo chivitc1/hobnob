@@ -12,7 +12,7 @@ import mongoose from 'mongoose';
 
 const MONGO_URI = `mongodb://user1:password123@localhost:27017/hobnob`;
 mongoose.Promise = global.Promise;
-mongoose.connect(MONGO_URI);
+mongoose.connect(MONGO_URI, { useNewUrlParser: true });
 mongoose.connection.on('error', () => {
   throw new Error(`unable to connect to database: ${MONGO_URI}`)
 });

@@ -25,7 +25,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 const MONGO_URI = `mongodb://user1:password123@localhost:27017/hobnob`;
 _mongoose.default.Promise = global.Promise;
 
-_mongoose.default.connect(MONGO_URI);
+_mongoose.default.connect(MONGO_URI, {
+  useNewUrlParser: true
+});
 
 _mongoose.default.connection.on('error', () => {
   throw new Error(`unable to connect to database: ${MONGO_URI}`);
