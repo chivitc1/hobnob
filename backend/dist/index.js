@@ -22,8 +22,9 @@ var _mongoose = _interopRequireDefault(require("mongoose"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const MONGO_URI = `mongodb://user1:password123@localhost:27017/hobnob`;
+const MONGO_URI = `mongodb://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_HOST}:${process.env.MONGODB_PORT}/${process.env.DBNAME}`;
 _mongoose.default.Promise = global.Promise;
+console.log(MONGO_URI);
 
 _mongoose.default.connect(MONGO_URI, {
   useNewUrlParser: true

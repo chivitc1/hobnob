@@ -21,8 +21,10 @@ else
 fi
 
 echo $cucumberSpec
-##export $cucumberSpec
-export SERVER_PROTOCOL=http
-export SERVER_HOSTNAME=localhost
-export SERVER_PORT=8080
+export $(grep -v '^#(.+)$' envs/.env | xargs)
+export $(grep -v '^#(.+)$' envs/test.env | xargs)
+echo $MONGODB_PORT
+echo $MONGODB_HOST
+echo $MONGODB_PASSWORD
+
 npx cucumber-js --require-module @babel/register --require spec/cucumber/steps $cucumberSpec

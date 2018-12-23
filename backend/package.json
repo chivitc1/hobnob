@@ -10,7 +10,7 @@
     "watch": "nodemon -w src --exec yarn run serve",
     "fix": "eslint src --fix",
     "lint": "eslint src",
-    "test:e2e": "dotenv -e envs/test.env scripts/test-e2e.sh"
+    "test:e2e": "scripts/test-e2e.sh"
   },
   "repository": {
     "type": "git",

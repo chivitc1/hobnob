@@ -1,4 +1,4 @@
-import { When, Then, AfterAll } from 'cucumber';
+import { When, Then, BeforeAll, AfterAll } from 'cucumber';
 import superagent from 'superagent';
 import assert, { AssertionError } from 'assert';
 import { getValidPayload } from './utils';
@@ -8,7 +8,8 @@ var {setDefaultTimeout} = require('cucumber');
 setDefaultTimeout(10 * 1000);
 
 let User;
-const MONGO_URI = `mongodb://user1:password123@localhost:27017/hobnob`;
+// const MONGO_URI = `mongodb://user1:password123@localhost:27017/hobnob`;
+const MONGO_URI = `mongodb://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_HOST}:${process.env.MONGODB_PORT}/${process.env.DBNAME}`;
 mongoose.Promise = global.Promise;
 
 const UserSchema = new mongoose.Schema({
@@ -31,6 +32,16 @@ process.on('SIGINT', function () {
   mongoose.connection.close(function () {
     console.log("Mongoose default connection is disconnected due to application termination");
     process.exit(0);
+  });
+});
+
+BeforeAll(function() {
+  return User.deleteOne(function(err, result){
+    if(err){ 
+        throw err;
+    } else{
+        console.log('No Of Documents deleted:' + result.n);
+    }
   });
 });
 
