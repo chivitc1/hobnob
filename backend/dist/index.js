@@ -14,11 +14,9 @@ var _checkContentIsJson = _interopRequireDefault(require("./middlewares/check-co
 
 var _errorHandle = _interopRequireDefault(require("./middlewares/error-handle"));
 
-var _user = _interopRequireDefault(require("./validators/user"));
-
-var _user2 = _interopRequireDefault(require("./models/user.model"));
-
 var _mongoose = _interopRequireDefault(require("mongoose"));
+
+var _users = _interopRequireDefault(require("./controllers/users.controller"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -40,19 +38,7 @@ app.use(_checkContentIsJson.default);
 app.use(_bodyParser.default.json({
   limit: 1e6
 }));
-app.use(_user.default);
-app.post('/users', (req, res, next) => {
-  let newUserModel = new _user2.default(req.body);
-  newUserModel.save().then(data => {
-    return res.status(201).set('Content-Type', 'application/json').json(data);
-  }).catch(error => {
-    console.log(error);
-    return res.status(500).set('Content-Type', 'application/json').json({
-      message: err
-    });
-  });
-}); // Handling error
-
+app.post('/users', _users.default.createUser);
 app.use(_errorHandle.default);
 app.listen(process.env.SERVER_PORT, () => {
   console.log(`Server start at port ${process.env.SERVER_PORT}`);
