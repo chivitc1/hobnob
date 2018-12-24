@@ -24,7 +24,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 const MONGO_URI = `mongodb://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_HOST}:${process.env.MONGODB_PORT}/${process.env.DBNAME}`;
 _mongoose.default.Promise = global.Promise;
-console.log(MONGO_URI);
 
 _mongoose.default.connect(MONGO_URI, {
   useNewUrlParser: true
@@ -43,12 +42,8 @@ app.use(_bodyParser.default.json({
 }));
 app.use(_user.default);
 app.post('/users', (req, res, next) => {
-  console.log("handle post /users: ");
-  console.log(req.body);
   let newUserModel = new _user2.default(req.body);
   newUserModel.save().then(data => {
-    console.log("CREATED USER: ");
-    console.log(data);
     return res.status(201).set('Content-Type', 'application/json').json(data);
   }).catch(error => {
     console.log(error);

@@ -3,6 +3,9 @@ import superagent from 'superagent';
 import assert, { AssertionError } from 'assert';
 import { getValidPayload } from './utils';
 import mongoose from 'mongoose';
+import child_process from 'child_process';
+
+const exec = child_process.exec
 
 var {setDefaultTimeout} = require('cucumber');
 setDefaultTimeout(10 * 1000);
@@ -53,6 +56,9 @@ AfterAll(function() {
         console.log('No Of Documents deleted:' + result.n);
     }
     mongoose.disconnect();
+    exec("dir", (error, stdout, stderr) => {
+    //do whatever here
+    });
   });
 });
 

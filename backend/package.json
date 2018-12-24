@@ -10,6 +10,7 @@
     "watch": "nodemon -w src --exec yarn run serve",
     "fix": "eslint src --fix",
     "lint": "eslint src",
+    "start": "scripts/run-backend.sh",
     "test:e2e": "scripts/test-e2e.sh"
   },
   "repository": {

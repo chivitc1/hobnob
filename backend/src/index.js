@@ -12,7 +12,6 @@ import mongoose from 'mongoose';
 
 const MONGO_URI = `mongodb://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_HOST}:${process.env.MONGODB_PORT}/${process.env.DBNAME}`;
 mongoose.Promise = global.Promise;
-console.log(MONGO_URI);
 mongoose.connect(MONGO_URI, { useNewUrlParser: true });
 mongoose.connection.on('error', () => {
   throw new Error(`unable to connect to database: ${MONGO_URI}`)
@@ -27,14 +26,10 @@ app.use(checkContentTypeIsJson);
 app.use(bodyParser.json({ limit: 1e6 }));
 app.use(validateInput);
 
-app.post('/users', (req, res, next) => {    
-  console.log("handle post /users: ");
-  console.log(req.body);
+app.post('/users', (req, res, next) => {  
   let newUserModel = new User(req.body);
   newUserModel.save()
     .then((data) => {
-    console.log("CREATED USER: ");
-    console.log(data);
     return res.status(201)
       .set('Content-Type', 'application/json')
       .json(data);

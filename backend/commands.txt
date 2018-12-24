@@ -87,3 +87,10 @@ $ yarn run test:e2e /home/chinv/dev/js/hobnob_chinv/hobnob/backend/spec/cucumber
 
 # Install mongoose
 yarn add mongoose
+
+# run backend 
+docker-compose up -d
+yarn run start
+
+# test e2e
+yarn run test:e2e
