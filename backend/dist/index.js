@@ -38,7 +38,7 @@ app.use(_checkContentIsJson.default);
 app.use(_bodyParser.default.json({
   limit: 1e6
 }));
-app.post('/users', _users.default.createUser);
+app.post('/users', _users.default.create);
 app.use(_errorHandle.default);
 app.listen(process.env.SERVER_PORT, () => {
   console.log(`Server start at port ${process.env.SERVER_PORT}`);

@@ -23,7 +23,7 @@ app.use(checkContentTypeIsJson);
 
 app.use(bodyParser.json({ limit: 1e6 }));
 
-app.post('/users', userCtrl.createUser);
+app.post('/users', userCtrl.create);
 app.use(handleErrors);
 
 app.listen(process.env.SERVER_PORT, () => {
