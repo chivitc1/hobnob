@@ -94,3 +94,7 @@ yarn run start
 
 # test e2e
 yarn run test:e2e
+
+# Add JSON schemas validator lib
+yarn add ajv
+

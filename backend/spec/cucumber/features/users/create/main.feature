@@ -50,10 +50,26 @@ Feature: Create User
     | a@1.2.3.4 |
     | a,b,c@!!  |
 
-    Scenario: Minimal Valid User
-      When the client creates a POST request to /users
-      And attaches a valid Create User payload
-      And sends the request
-      Then our API should respond with a 201 HTTP status code
-      And the payload of the response should be a JSON object
-      And the user object should be added to the database
+  Scenario: Minimal Valid User
+    When the client creates a POST request to /users
+    And attaches a valid Create User payload
+    And sends the request
+    Then our API should respond with a 201 HTTP status code
+    And the payload of the response should be a JSON object
+    And the user object should be added to the database
+
+  Scenario Outline: Invalid Profile
+    When the client creates a POST request to /users/
+    And attaches <payload> as the payload
+    And sends the request
+    Then our API should respond with a 400 HTTP status code
+    And the payload of the response should be a JSON object
+    And contains a message property which says "The profile provided is invalid."
+
+    Examples:
+    | payload |
+    | {"email":"e@ma.il","password":"abc","profile":{"foo":"bar"}}  |
+    | {"email":"e@ma.il","password":"abc","profile":{"name":{"first":"Jane","a":"b"}}} |
+    | {"email":"e@ma.il","password":"abc","profile":{"summary":0}} |
+    | {"email":"e@ma.il","password":"abc","profile":{"bio":0}} |
+    

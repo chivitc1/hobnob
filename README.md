@@ -1,5 +1,5 @@
 # hobnob
-Learn react
+Learn fullstack javascript
 
 ## Overal requirements
 - Overall goal of the project is to "Create a web application that allows users to log in and update their profiles."
@@ -37,3 +37,45 @@ Learn react
 - If a request uses the method POST, PUT or PATCH, it must carry a non-empty payload.
 - If a request contains a non-empty payload, it should have its Content-Type header set. If it doesn't, respond with the 400 Bad Request status code.
 - If a request has set its Content-Type header, it must contain the string application/json. If it doesn't, respond with the 415 Unsupported Media Type status code.
+
+## Add user profile
+- Requirement: The user payload may optionally provide a profile object; otherwise, an empty profile will be created for them
+
+- Add two more scenarios where the client provides a profile object — one using an invalid profile, the other a valid one.
+
+- What constitutes a valid profile?
+
+```
+{
+  "name": {
+    "first": <string>,
+    "last": <string>,
+    "middle": <string>
+  },
+  "summary": <string>,
+  "bio": <string>
+}
+```
+
+- Define JSON schemas for our models for validating
+
+## Picking a JSON Schema validation lib
+
+djv, ajv, is-my-json-valid, tv4,...
+
+- Focus on performance (how quick it is) and conformity (how closely it conforms to the specification)
+
+- Developer and community support are also important factors to consider
+
+- The most popular libraries and examine their number of GitHub stars, the number of weekly downloads from npmjs.com, and the number of dependent repositories and packages*
+
+- The date of its last meaningful commit to the master branch (this excludes version bump and formatting changes): is it no longer maintained
+
+- The number of open issues
+
+- The frequency of releases
+
+- Add Ajv to our project's dependencies: 
+
+$ yarn add ajv
+

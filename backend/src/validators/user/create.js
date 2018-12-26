@@ -1,6 +1,12 @@
 import ValidationError from '../errors/validation-error';
+import Ajv from 'ajv';
+import profileSchema from '../../schemas/user/profile.json';
+import createUserSchema from '../../schemas/user/create.json';
+
 
 function validate(req) {
+
+  const ajvValidate = new Ajv()
   if (!Object.prototype.hasOwnProperty.call(req.body, 'email')) {
     return new ValidationError("The 'email' field is missing");
   }

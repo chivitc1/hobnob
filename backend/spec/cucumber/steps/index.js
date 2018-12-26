@@ -3,15 +3,10 @@ import superagent from 'superagent';
 import assert, { AssertionError } from 'assert';
 import { getValidPayload } from './utils';
 import mongoose from 'mongoose';
-import child_process from 'child_process';
 
-const exec = child_process.exec
-
-var {setDefaultTimeout} = require('cucumber');
+var { setDefaultTimeout } = require('cucumber');
 setDefaultTimeout(10 * 1000);
 
-let User;
-// const MONGO_URI = `mongodb://user1:password123@localhost:27017/hobnob`;
 const MONGO_URI = `mongodb://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_HOST}:${process.env.MONGODB_PORT}/${process.env.DBNAME}`;
 mongoose.Promise = global.Promise;
 
@@ -24,7 +19,7 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
-User = mongoose.model('User', UserSchema);
+const User = mongoose.model('User', UserSchema);
 
 mongoose.connection.on('error', () => {
   throw new Error(`unable to connect to database: ${MONGO_URI}`)
@@ -56,9 +51,6 @@ AfterAll(function() {
         console.log('No Of Documents deleted:' + result.n);
     }
     mongoose.disconnect();
-    exec("dir", (error, stdout, stderr) => {
-    //do whatever here
-    });
   });
 });
 
@@ -112,6 +104,13 @@ When(/^attaches a valid (.+) payload$/, function (payloadType) {
   this.request
     .send(JSON.stringify(this.requestPayload))
     .set('Content-Type', 'application/json');
+});
+
+When(/^attaches (.+) as the payload$/, function(payload) {
+  console.log(payload);
+  this.requestPayload = JSON.parse(payload);
+  this.request.set('Content-Type', 'application/json')
+    .send(payload);
 });
 
 When(/^sends the request$/, function () {
