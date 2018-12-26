@@ -34,6 +34,35 @@ Feature: Create User
     | email         | The 'email' field is missing  |
     | password        | The 'password' field is missing |
 
+  Scenario Outline: Request Payload with Properties of Unsupported Type
+    When the client creates a POST request to /users
+    And attaches a Create User payload where the <field> field is not a <type>
+    And sends the request
+    Then our API should respond with a 400 HTTP status code
+    And the payload of the response should be a JSON object
+    And contains a message property which says "The '<field>' field must be of type <type>"
+
+    Examples:
+
+    | field  | type   |
+    | email  | string |
+    | password | string |
+
+  Scenario Outline: Request Payload with invalid email format
+    When the client creates a POST request to /users
+    And attaches a Create User payload where the email field is exactly <email>
+    And sends the request
+    Then our API should respond with a 400 HTTP status code
+    And the payload of the response should be a JSON object
+    And contains a message property which says "The 'email' field must be a valid email"
+
+    Examples:
+
+    | email     |
+    | a238juqy2 |
+    | a@1.2.3.4 |
+    | a,b,c@!!  |
+
   Scenario Outline: Request Payload with invalid email format
 
     When the client creates a POST request to /users
@@ -64,12 +93,12 @@ Feature: Create User
     And sends the request
     Then our API should respond with a 400 HTTP status code
     And the payload of the response should be a JSON object
-    And contains a message property which says "The profile provided is invalid."
+    And contains a message property which says "<message>"
 
     Examples:
-    | payload |
-    | {"email":"e@ma.il","password":"abc","profile":{"foo":"bar"}}  |
-    | {"email":"e@ma.il","password":"abc","profile":{"name":{"first":"Jane","a":"b"}}} |
-    | {"email":"e@ma.il","password":"abc","profile":{"summary":0}} |
-    | {"email":"e@ma.il","password":"abc","profile":{"bio":0}} |
+    | payload | message |
+    | {"email":"e@ma.il","password":"abc","profile":{"foo":"bar"}}  |  The 'profile' object does not support the field 'foo' |
+    | {"email":"e@ma.il","password":"abc","profile":{"name":{"first":"Jane","a":"b"}}} |  The 'profile.name' object does not support the field 'a' |
+    | {"email":"e@ma.il","password":"abc","profile":{"summary":0}} | The 'profile.summary' field must be of type string |
+    | {"email":"e@ma.il","password":"abc","profile":{"bio":0}} | The 'profile.bio' field must be of type string |
     

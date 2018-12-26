@@ -4,7 +4,7 @@ export $(grep -v '^#(.+)$' envs/.env | xargs)
 export $(grep -v '^#(.+)$' envs/test.env | xargs)
 MONGO_URI=$MONGODB_HOST:$MONGODB_PORT
 MONGO_START_DELAY=15
-RETRY_INTERVAL=2
+MONGO_START_RETRY_INTERVAL=2
 MONGO_START_DELAY=15
 MONGO_NOT_RUNNING=-1
 
@@ -33,8 +33,8 @@ if ! check_mongo_up; then
   # Wait until Elasticsearch is ready to respond
   until check_mongo_up
   do
-    echo "WAITING $((RETRY_INTERNAL)) s..."
-    sleep $RETRY_INTERVAL
+    echo "WAITING $MONGO_START_RETRY_INTERVAL s..."
+    sleep $MONGO_START_RETRY_INTERVAL
   done
   echo "Starting server for test"
 fi
@@ -50,8 +50,22 @@ fi
 npx nodemon -w src --exec yarn run serve &
 
 API_RETRY_INTERVAL=5
-until ss -lnt | grep -q :$SERVER_PORT; do
-  echo "Waiting api service start..."
+API_MAX_RETRIES=3
+count=0
+
+function check_api_up() {
+  if ss -lnt | grep -q :$SERVER_PORT; then
+    return 1
+  else 
+    return -1
+  fi
+}
+until [[ check_api_up ]]; do
+  echo "Waiting api service start... (retries= $count)"
+  ((count + 1))
+  if ((count > API_MAX_RETRIES)); then
+    break
+  fi;
   sleep $API_RETRY_INTERVAL
 done
 
