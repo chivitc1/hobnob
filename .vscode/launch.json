@@ -14,7 +14,15 @@
       "program": "${file}",
       "protocol": "inspector",
       "env": {
-        "BABEL_ENV": "debug"
+        "BABEL_ENV": "debug",
+        "SERVER_PORT": "8080",
+        "SERVER_PROTOCOL": "http",
+        "SERVER_HOSTNAME": "localhost",
+        "MONGODB_HOST": "localhost",
+        "MONGODB_PORT": "27017",
+        "DBNAME": "hobnob",
+        "MONGODB_USER": "user1",
+        "MONGODB_PASSWORD": "password123"
       }
     }
   ],

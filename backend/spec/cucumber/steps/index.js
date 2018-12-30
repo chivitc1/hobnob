@@ -34,8 +34,9 @@ process.on('SIGINT', function () {
 });
 
 BeforeAll(function() {
+  console.log("SERVERPORT: " + process.env.SERVER_PORT);
   return User.deleteOne(function(err, result){
-    if(err){ 
+    if(err){
         throw err;
     } else{
         console.log('No Of Documents deleted:' + result.n);
@@ -45,7 +46,7 @@ BeforeAll(function() {
 
 AfterAll(function() {
   return User.deleteOne(function(err, result){
-    if(err){ 
+    if(err){
         throw err;
     } else{
         console.log('No Of Documents deleted:' + result.n);
@@ -113,6 +114,21 @@ When(/^attaches (.+) as the payload$/, function(payload) {
     .send(payload);
 });
 
+When(/^attaches a Create User payload where the (.+) field is not a (.+)$/,
+  function(fieldName, fieldType) {
+  const payload = {
+    email: "user@example.com",
+    password: "password123"
+  }
+  for (var key in payload) {
+    if (key == fieldName) {
+      payload[key] = 123;
+    }
+  }
+  // this.requestPayload = JSON.parse(payload);
+  this.request.set('Content-Type', 'application/json').send(payload);
+});
+
 When(/^sends the request$/, function () {
   return this.request
     .then((response) => {
@@ -159,7 +175,7 @@ Then(/^the user object should be added to the database$/,
       .then((data) => {
         if (!data) {
           throw new AssertionError({ message: "User object not added to database" });
-        } 
+        }
 
         assert.deepStrictEqual(data._id + '', this.userId)
       })

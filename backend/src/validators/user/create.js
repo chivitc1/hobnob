@@ -13,10 +13,12 @@ function validate(req) {
     .addSchema([profileSchema, createUserSchema])
     .compile(createUserSchema);
   const valid = ajvValidate(req.body);
-  
+
   if (!valid) {
+    console.log("DEBUG");
+    console.log(generateValidationErrorMessage(ajvValidate.errors));
     return new ValidationError(generateValidationErrorMessage(ajvValidate.errors));
-  } 
+  }
 
   return true;
 }
@@ -28,7 +30,7 @@ function generateValidationErrorMessage(errors){
   }
 
   if (error.keyword === 'type') {
-    return `The '${error.dataPath}' field must be of ${error.params.type}`;
+    return `The '${error.dataPath}' field must be of type ${error.params.type}`;
   }
 
   if (error.keyword === 'format') {
@@ -36,12 +38,10 @@ function generateValidationErrorMessage(errors){
   }
 
   if (error.keyword === 'additionalProperties') {
-    return `The '${errror.dataPath}' object does not support the field '${error.params.additionalProperty}'`;
+    return `The '${error.dataPath}' object does not support the field '${error.params.additionalProperty}'`;
   }
 
   return 'The object is invalid';
 }
 
 export default validate;
-
-

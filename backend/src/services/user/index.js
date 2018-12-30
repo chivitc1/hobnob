@@ -4,10 +4,13 @@ import validate from '../../validators/user/create'
 
 function create(req) {
   const validationResult = validate(req);
+  
   if (validationResult instanceof ValidationError) { 
+    console.log("DEBUG2");
+    console.log(validationResult);
     return Promise.reject(validationResult);
   }
-
+  
   const createUserModel = new User(req.body);
   return createUserModel.save();
 }
