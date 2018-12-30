@@ -15,8 +15,6 @@ function validate(req) {
   const valid = ajvValidate(req.body);
 
   if (!valid) {
-    console.log("DEBUG");
-    console.log(generateValidationErrorMessage(ajvValidate.errors));
     return new ValidationError(generateValidationErrorMessage(ajvValidate.errors));
   }
 

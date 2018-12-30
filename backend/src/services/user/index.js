@@ -6,8 +6,6 @@ function create(req) {
   const validationResult = validate(req);
   
   if (validationResult instanceof ValidationError) { 
-    console.log("DEBUG2");
-    console.log(validationResult);
     return Promise.reject(validationResult);
   }
   

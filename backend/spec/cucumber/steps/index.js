@@ -34,7 +34,6 @@ process.on('SIGINT', function () {
 });
 
 BeforeAll(function() {
-  console.log("SERVERPORT: " + process.env.SERVER_PORT);
   return User.deleteOne(function(err, result){
     if(err){
         throw err;
@@ -108,7 +107,6 @@ When(/^attaches a valid (.+) payload$/, function (payloadType) {
 });
 
 When(/^attaches (.+) as the payload$/, function(payload) {
-  console.log(payload);
   this.requestPayload = JSON.parse(payload);
   this.request.set('Content-Type', 'application/json')
     .send(payload);
@@ -148,7 +146,6 @@ Then(/^the payload of the response should be an? ([a-zA-Z0-9, ]+)$/, function (p
     try {
       return this.responsePayload = JSON.parse(this.response.text);
     } catch (err) {
-      console.log("ERROR: " + err)
       throw new AssertionError({ message: 'Response not a valid JSON object' });
     }
   }

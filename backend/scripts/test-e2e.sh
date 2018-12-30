@@ -1,12 +1,14 @@
 #!/bin/bash
 clear
-export $(grep -v '^#(.+)$' envs/.env | xargs)
 export $(grep -v '^#(.+)$' envs/test.env | xargs)
 MONGO_URI=$MONGODB_HOST:$MONGODB_PORT
-MONGO_START_DELAY=15
 MONGO_START_RETRY_INTERVAL=2
-MONGO_START_DELAY=15
+MONGO_START_DELAY=10
 MONGO_NOT_RUNNING=-1
+
+API_RETRY_INTERVAL=5
+API_MAX_RETRIES=3
+API_START_DELAY=5
 
 function check_mongo_up() {
   if curl $MONGO_URI | grep -q 'It looks like'; then
@@ -36,7 +38,6 @@ if ! check_mongo_up; then
     echo "WAITING $MONGO_START_RETRY_INTERVAL s..."
     sleep $MONGO_START_RETRY_INTERVAL
   done
-  echo "Starting server for test"
 fi
 
 # Delay run backend for mongodb is completely started
@@ -47,10 +48,11 @@ then
 fi
 
 # Run backend in background
-npx nodemon -w src --exec yarn run serve &
+yarn run serve &
 
-API_RETRY_INTERVAL=5
-API_MAX_RETRIES=3
+echo "Wait for api backend start...$API_START_DELAY s"
+sleep $API_START_DELAY
+
 count=0
 
 function check_api_up() {
@@ -60,10 +62,10 @@ function check_api_up() {
     return -1
   fi
 }
-until [[ check_api_up ]]; do
+until check_api_up; do
   echo "Waiting api service start... (retries= $count)"
-  ((count + 1))
-  if ((count > API_MAX_RETRIES)); then
+  count=$((count + 1))
+  if (($count > API_MAX_RETRIES)); then
     break
   fi;
   sleep $API_RETRY_INTERVAL
