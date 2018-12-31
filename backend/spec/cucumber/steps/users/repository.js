@@ -24,7 +24,9 @@ if (!(mongoose.connection.readyState == 1)) {
 
 function closeResource(callback) {
   mongoose.disconnect();
-  callback();
+  if (callback) {
+    callback();
+  }  
 }
 
 export { User, closeResource };
