@@ -111,4 +111,10 @@ yarn run test:unit
 # Run unit tests and e2e tests
 yarn run test
 
+# Install lodash sub package for deep equal
+yarn add lodash.isequal lodash.clonedeep --dev
+
+# Install Spy lib for check function get called
+yarn add sinon --dev
+
 
