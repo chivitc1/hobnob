@@ -1,4 +1,4 @@
-import { When, Then, BeforeAll, AfterAll } from 'cucumber';
+import { When, Then, BeforeAll, AfterAll, After, Status } from 'cucumber';
 import superagent from 'superagent';
 import assert, { AssertionError } from 'assert';
 import { getValidPayload } from './utils';
@@ -37,9 +37,7 @@ BeforeAll(function() {
   return User.deleteOne(function(err, result){
     if(err){
         throw err;
-    } else{
-        console.log('No Of Documents deleted:' + result.n);
-    }
+    } 
   });
 });
 
@@ -47,9 +45,7 @@ AfterAll(function() {
   return User.deleteOne(function(err, result){
     if(err){
         throw err;
-    } else{
-        console.log('No Of Documents deleted:' + result.n);
-    }
+    } 
     mongoose.disconnect();
   });
 });
@@ -181,4 +177,15 @@ Then(/^the user object should be added to the database$/,
         console.log(err);
       });
 
+  });
+
+  After(function (scenario) {
+    if (scenario.result.status === Status.PASSED) {
+      console.log("Passed");
+      return User.deleteOne(function(err){
+        if(err){
+            throw err;
+        }
+      });
+    }
   });

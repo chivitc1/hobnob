@@ -85,3 +85,19 @@ Feature: Create User
     | {"email":"e@ma.il","password":"abc","profile":{"name":{"first":"Jane","a":"b"}}} |  The '.profile.name' object does not support the field 'a' |
     | {"email":"e@ma.il","password":"abc","profile":{"summary":0}} | The '.profile.summary' field must be of type string |
     | {"email":"e@ma.il","password":"abc","profile":{"bio":0}} | The '.profile.bio' field must be of type string |
+  
+  Scenario Outline: Valid Profile
+    When the client creates a POST request to /users
+    And attaches <payload> as the payload
+    And sends the request
+    Then our API should respond with a 201 HTTP status code
+    And the payload of the response should be a JSON object
+    And the user object should be added to the database
+
+    Examples:
+    | payload |
+    | {"email":"e@ma.il","password":"password","profile":{}} |
+    | {"email":"e@ma.il","password":"password","profile":{"name":{}}} |
+    | {"email":"e@ma.il","password":"password","profile":{"name":{"first":"Daniel"}}} |
+    | {"email":"e@ma.il","password":"password","profile":{"bio":"bio"}} |
+    | {"email":"e@ma.il","password":"password","profile":{"summary":"summary"}} |
