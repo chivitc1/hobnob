@@ -95,6 +95,20 @@ yarn run start
 # test e2e
 yarn run test:e2e
 
+yarn run test:e2e spec/cucumber/features/users/create/main.feature
+
+yarn run test:e2e spec/cucumber/features/users/create/main.feature 99
+
 # Add JSON schemas validator lib
 yarn add ajv
+
+# install Mocha as a development dependency:
+yarn add mocha --dev
+
+# Run unit tests
+yarn run test:unit
+
+# Run unit tests and e2e tests
+yarn run test
+
 

@@ -4,14 +4,15 @@
   "description": "Learn react - backend",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rimraf dist && babel src -d dist --copy-files",
     "serve": "yarn run build && dotenv -e envs/run.env node dist/index.js",
     "watch": "nodemon -w src --exec yarn run serve",
     "fix": "eslint src --fix",
     "lint": "eslint src",
     "start": "scripts/run-backend.sh",
-    "test:e2e": "scripts/test-e2e.sh"
+    "test:e2e": "scripts/test-e2e.sh",
+    "test:unit": "mocha 'src/**/*.test.js' --require @babel/register",
+    "test": "yarn run test:unit && yarn run test:e2e"
   },
   "repository": {
     "type": "git",
@@ -39,6 +40,7 @@
     "eslint": "^5.10.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0",
+    "mocha": "^5.2.0",
     "ndb": "^1.0.42",
     "nodemon": "^1.18.9",
     "rimraf": "^2.6.2",

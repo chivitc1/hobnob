@@ -22,4 +22,3 @@ $ yarn run test:e2e spec/cucumber/features/users/create/main.feature
 - Run one scenario in feature file by specifying the scenario line number:
 
 $ yarn run test:e2e spec/cucumber/features/users/create/main.feature 99
-

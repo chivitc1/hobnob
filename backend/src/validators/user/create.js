@@ -2,7 +2,7 @@ import ValidationError from '../errors/validation-error';
 import Ajv from 'ajv';
 import profileSchema from '../../schemas/user/profile.json';
 import createUserSchema from '../../schemas/user/create.json';
-
+import generateValidationErrorMessage from '../errors/messages';
 
 function validate(req) {
 
@@ -19,27 +19,6 @@ function validate(req) {
   }
 
   return true;
-}
-
-function generateValidationErrorMessage(errors){
-  const error = errors[0];
-  if (error.keyword === 'required') {
-    return `The '${error.dataPath}.${error.params.missingProperty}' field is missing`;
-  }
-
-  if (error.keyword === 'type') {
-    return `The '${error.dataPath}' field must be of type ${error.params.type}`;
-  }
-
-  if (error.keyword === 'format') {
-    return `The '${error.dataPath}' field must be a valid ${error.params.format}`;
-  }
-
-  if (error.keyword === 'additionalProperties') {
-    return `The '${error.dataPath}' object does not support the field '${error.params.additionalProperty}'`;
-  }
-
-  return 'The object is invalid';
 }
 
 export default validate;
