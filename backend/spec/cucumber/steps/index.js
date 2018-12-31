@@ -181,7 +181,6 @@ Then(/^the user object should be added to the database$/,
 
   After(function (scenario) {
     if (scenario.result.status === Status.PASSED) {
-      console.log("Passed");
       return User.deleteOne(function(err){
         if(err){
             throw err;

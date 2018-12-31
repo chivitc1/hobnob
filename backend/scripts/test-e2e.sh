@@ -11,7 +11,7 @@ API_MAX_RETRIES=3
 API_START_DELAY=5
 
 function check_mongo_up() {
-  if curl $MONGO_URI | grep -q 'It looks like'; then
+  if curl --silent $MONGO_URI | grep -q 'It looks like'; then
     echo "MongoDb started"
     return 0    
   fi
