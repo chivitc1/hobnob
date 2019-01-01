@@ -16,9 +16,9 @@ var _errorHandle = _interopRequireDefault(require("./middlewares/error-handle"))
 
 var _mongoose = _interopRequireDefault(require("mongoose"));
 
-var _users = _interopRequireDefault(require("./controllers/users.controller"));
+var _user = _interopRequireDefault(require("./controllers/user"));
 
-var _user = _interopRequireDefault(require("./services/user"));
+var _user2 = _interopRequireDefault(require("./services/user"));
 
 var _validationError = _interopRequireDefault(require("./validators/errors/validation-error"));
 
@@ -44,7 +44,7 @@ _mongoose.default.connection.on('error', () => {
  */
 
 
-const handlerToServiceMap = new Map([[_users.default.create, _user.default]]);
+const handlerToServiceMap = new Map([[_user.default.create, _user2.default]]);
 const app = (0, _express.default)();
 /**
  * Middleware handlers
@@ -56,7 +56,7 @@ app.use(_checkContentIsJson.default);
 app.use(_bodyParser.default.json({
   limit: 1e6
 }));
-app.post('/users', (0, _injectHandlerDependenies.default)(_users.default.create, handlerToServiceMap, _validationError.default));
+app.post('/users', (0, _injectHandlerDependenies.default)(_user.default.create, handlerToServiceMap, _validationError.default));
 app.use(_errorHandle.default);
 app.listen(process.env.SERVER_PORT, () => {
   console.log(`Server start at port ${process.env.SERVER_PORT}`);

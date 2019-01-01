@@ -6,7 +6,7 @@ import checkContentTypeIsSet from './middlewares/check-content-type-is-set';
 import checkContentTypeIsJson from './middlewares/check-content-is-json';
 import handleErrors from './middlewares/error-handle';
 import mongoose from 'mongoose';
-import userCtrl from './controllers/users.controller';
+import userCtrl from './controllers/user';
 import userService from './services/user';
 import ValidationError from './validators/errors/validation-error';
 import injectHandlerDependencies from './utils/inject-handler-dependenies';
