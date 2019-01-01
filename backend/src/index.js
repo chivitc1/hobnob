@@ -24,7 +24,7 @@ mongoose.connection.on('error', () => {
 /**
  * Dependencies injection mapping
  */
-const handlerToServiceMap = new Map([[userCtrl.create, userService]]);
+const handlerToServiceMap = new Map([[userCtrl.create, userService.create]]);
 
 const app = express();
 
