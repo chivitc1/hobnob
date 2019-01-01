@@ -1,7 +1,4 @@
-import userService from '../services/user';
-import ValidationError from '../validators/errors/validation-error';
-
-function create(req, res) {
+function create(req, res, userService, ValidationError) {
   
   return userService.create(req)
     .then((result) => {

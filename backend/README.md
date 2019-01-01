@@ -22,3 +22,11 @@ $ yarn run test:e2e spec/cucumber/features/users/create/main.feature
 - Run one scenario in feature file by specifying the scenario line number:
 
 $ yarn run test:e2e spec/cucumber/features/users/create/main.feature 99
+
+# To run test while dev
+- Start Mongo
+docker-compose up -d
+
+- Start api backend
+  - Using vscode launch.json debug: active the src/index.js and press F5
+  - Or command line: ./script/run-backend.sh
