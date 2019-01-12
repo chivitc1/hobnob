@@ -1,4 +1,5 @@
 **/*.swp
+envs/.env
 # Logs
 logs
 *.log

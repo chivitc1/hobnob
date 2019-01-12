@@ -11,7 +11,8 @@ function create(req, res, createUser, ValidationError) {
         res.json({ message: err.message });
         return res;
       }
-      console.log("ERROR:");
+      
+      console.log("ERROR:"); 
       console.log(err);
       res.status(500);
       res.set('Content-Type', 'application/json');

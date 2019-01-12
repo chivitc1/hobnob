@@ -79,3 +79,34 @@ djv, ajv, is-my-json-valid, tv4,...
 
 $ yarn add ajv
 
+
+# Usage
+## Set project
+
+git clone https://github.com/chivitc1/hobnob.git
+
+cd hobnob/
+
+git checkout create-user/main
+
+cd backend && npm install && cd ..
+
+cp envs/.env.example envs/.env
+
+Update envs/.env as your environment.
+
+## Run e2e tests
+
+yarn run test:e2e
+
+## Start back-end
+
+cd hobnob/
+
+docker-compose up -d
+
+yarn run start:dev
+
+
+
+

@@ -38,6 +38,15 @@ app.use(bodyParser.json({ limit: 1e6 }));
 app.post('/users', injectHandlerDependencies(userCtrl.create, handlerToServiceMap, ValidationError));
 app.use(handleErrors);
 
-app.listen(process.env.SERVER_PORT, () => {
+const server = app.listen(process.env.SERVER_PORT, () => {
   console.log(`Server start at port ${process.env.SERVER_PORT}`)
+});
+
+process.on('SIGTERM', () => {
+  console.info('SIGTERM signal received.');
+  console.log('Closing http server.');
+  server.close(() => {
+    console.log('Http server closed.');
+    process.exit(1);
+  });
 });
